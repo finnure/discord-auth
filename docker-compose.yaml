@@ -1,0 +1,30 @@
+version: "3.7"
+
+services:
+  nginx:
+    container_name: nginx
+    image: nginx:alpine
+    volumes:
+      - ./nginx-conf:/etc/nginx/conf.d
+      - ./certs:/etc/ssl/certs
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      - discauth-network
+  discauth:
+    container_name: discauth
+    build:
+      context: .
+      dockerfile: dockerfile
+    image: discord-auth:1.0
+    restart: unless-stopped
+    environment:
+      - DISCORD_TOKEN=${DISCORD_TOKEN}
+      - COOKIE_DOMAIN=${COOKIE_DOMAIN}
+    networks:
+      - discauth-network
+
+networks:
+  klauvi-network:
+    driver: bridge
